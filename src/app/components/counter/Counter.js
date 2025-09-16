@@ -11,15 +11,19 @@ export default function Counter() {
 
       <div className="flex items-center justify-between">
         <button
+          data-id="minus-count-btn"
           className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
           onClick={() => setCount(count - 1)}
         >
           -
         </button>
 
-        <span className="text-2xl">{count}</span>
+        <span data-id="count-number" className="text-2xl">
+          {count}
+        </span>
 
         <button
+          data-id="plus-count-btn"
           className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
           onClick={() => setCount(count + 1)}
         >
