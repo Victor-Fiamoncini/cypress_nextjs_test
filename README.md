@@ -14,6 +14,10 @@ npm i
 npm run dev
 ```
 
+```bash
+npm run cypress:open # Starts cypress UI
+```
+
 ----------
 Released in 2025. This project is under the MIT license.
 
