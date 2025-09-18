@@ -1,35 +1,52 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 export default function TodoList() {
-  const [task, setTask] = useState('')
-  const [tasks, setTasks] = useState([])
+  const [todos, setTodos] = useState([])
+  const [newTodo, setNewTodo] = useState('')
 
-  const addTask = (event) => {
+  const handleAddTodo = async (event) => {
     event.preventDefault()
 
-    if (!task.trim()) return
+    const response = await fetch('/api/todos', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text: newTodo }),
+    })
 
-    setTasks([...tasks, task])
+    const todo = await response.json()
 
-    setTask('')
+    setTodos([...todos, todo])
+    setNewTodo('')
   }
 
-  const removeTask = (index) => {
-    setTasks(tasks.filter((_, i) => i !== index))
+  const handleRemoveTodo = async (id) => {
+    await fetch('/api/todos', {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id }),
+    })
+
+    setTodos(todos.filter((todo) => todo.id !== id))
   }
+
+  useEffect(() => {
+    fetch('/api/todos')
+      .then((response) => response.json())
+      .then(setTodos)
+  }, [])
 
   return (
     <div className="bg-gray-800 text-white p-5 max-w-md mx-auto rounded-lg mt-10">
       <h2 className="text-xl font-bold mb-4">To-Do List</h2>
 
-      <form onSubmit={addTask} className="mb-4">
+      <form onSubmit={handleAddTodo} className="mb-4">
         <input
           className="text-gray-900 p-2 mr-2 rounded bg-white"
           type="text"
-          value={task}
-          onChange={(event) => setTask(event.target.value)}
+          value={newTodo}
+          onChange={(event) => setNewTodo(event.target.value)}
           placeholder="Add a new task"
         />
 
@@ -39,14 +56,14 @@ export default function TodoList() {
       </form>
 
       <ul data-id="todo-list">
-        {tasks.map((task, index) => (
-          <li key={index} className="flex justify-between items-center mb-2">
-            <span>{task}</span>
+        {todos.map((todo) => (
+          <li key={todo.id} className="flex justify-between items-center mb-2">
+            <span>{todo.text}</span>
 
             <button
-              data-id={`${task}-remove-btn`}
+              data-id={`todo-${todo.id}-remove-btn`}
               className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-3 rounded"
-              onClick={() => removeTask(index)}
+              onClick={() => handleRemoveTodo(todo.id)}
             >
               X
             </button>
